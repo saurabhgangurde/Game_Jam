@@ -1,5 +1,6 @@
 import sys
 import sdl2.ext
+import time
 
 RESOURCES = sdl2.ext.Resources(__file__, "resources")
 sdl2.ext.init()
@@ -14,13 +15,14 @@ while running:
     	sprite = factory.from_image(RESOURCES.get_path("1.jpg"))
     	spriterenderer = factory.create_sprite_render_system(window)
     	spriterenderer.render(sprite)
-    	i = i+1   
+    	i = i+1 
+    	time.sleep(0.1)  
     if i == 2:
     	sprite = factory.from_image(RESOURCES.get_path("2.jpg"))
     	spriterenderer = factory.create_sprite_render_system(window)
     	spriterenderer.render(sprite)
     	i= 1   
-
+    	time.sleep(0.1)
     events = sdl2.ext.get_events()
     for event in events:
         if event.type == sdl2.SDL_QUIT:
