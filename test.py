@@ -1,29 +1,31 @@
 import sys
 import sdl2.ext
 import time
+from OpenGL import GL, GLU
+from sdl2 import *
 
 class Eagle(sdl2.ext.Entity):
     def __init__(self, world, sprite, posx=0, posy=0):
         self.sprite = sprite
-        self.sprite.position = posx, posy
+        self.sprite.x = posx
+        self.sprite.y = posy
 
 RESOURCES = sdl2.ext.Resources(__file__, "resources")
 sdl2.ext.init()
 
-window = sdl2.ext.Window("Eagle Warrior", size=(900, 760))
+window = sdl2.ext.Window("Eagle Warrior", size=(640, 480))
 window.show()
 factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
 spriterenderer = factory.create_sprite_render_system(window)
 running = True
 i =1
-posx=500
-posy=200
+posx=100
+posy=100
 while running:
     if i == 1: 
     	world = sdl2.ext.World()
     	sprite = factory.from_image(RESOURCES.get_path("1.gif"))
     	Eagle1 = Eagle(world, sprite,posx,posy)
-    	window.refresh()
     	spriterenderer.render(sprite)	
     	i = i+1
     	posx = posx+1
@@ -45,7 +47,6 @@ while running:
     	world = sdl2.ext.World()
     	sprite = factory.from_image(RESOURCES.get_path("3.gif"))
     	Eagle1 = Eagle(world, sprite,posx,posy)
-    	window.refresh()
     	spriterenderer.render(sprite)	
     	i = i+1
     	posx = posx+1
@@ -56,7 +57,6 @@ while running:
     	world = sdl2.ext.World()
     	sprite = factory.from_image(RESOURCES.get_path("4.gif"))
     	Eagle2 = Eagle(world, sprite,posx,posy)
-    	window.refresh()
     	spriterenderer.render(sprite)
     	posx = posx+1
     	posy = posy+1 
@@ -69,4 +69,5 @@ while running:
         if event.type == sdl2.SDL_QUIT:
             running = False
             break
-    window.refresh()
+    SDL_GL_SwapBuffers();
+    
