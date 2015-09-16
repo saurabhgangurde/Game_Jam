@@ -7,12 +7,19 @@ sdl2.ext.init()
 window = sdl2.ext.Window("Hello World!", size=(640, 480))
 window.show()
 factory = sdl2.ext.SpriteFactory(sdl2.ext.SOFTWARE)
-sprite = factory.from_image(RESOURCES.get_path("hello.gif"))
-
-spriterenderer = factory.create_sprite_render_system(window)
-spriterenderer.render(sprite)
 running = True
+i =1
 while running:
+    if i == 1: 
+    	sprite = factory.from_image(RESOURCES.get_path("1.jpg"))
+    	spriterenderer = factory.create_sprite_render_system(window)
+    	spriterenderer.render(sprite)
+    	i = i+1   
+    if i == 2:
+    	sprite = factory.from_image(RESOURCES.get_path("2.jpg"))
+    	spriterenderer = factory.create_sprite_render_system(window)
+    	spriterenderer.render(sprite)
+    	i= 1   
 
     events = sdl2.ext.get_events()
     for event in events:
