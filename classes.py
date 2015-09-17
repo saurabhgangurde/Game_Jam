@@ -42,6 +42,13 @@ class character(object):
 
     def is_attacking(self, objectarray):
         if self.imagerect.x+self.imagerect.width >= objectarray.imagerect.x and self.imagerect.y+self.imagerect.height >= objectarray.imagerect.y and self.imagerect.y <= objectarray.imagerect.y + objectarray.imagerect.height:
+            objectarray.imagerect.x=1200
+            return True
+        else:
+            return False
+
+    def is_hit(self, objectarray):
+        if self.imagerect.x+self.imagerect.width >= objectarray.imagerect.x and self.imagerect.y+self.imagerect.height >= objectarray.imagerect.y and self.imagerect.y <= objectarray.imagerect.y + objectarray.imagerect.height:
             return True
         else:
             return False

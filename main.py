@@ -5,6 +5,7 @@ import math
 import classes
 
 score=0;
+health=1000;
 
 def is_eagle_flying(eaglerect):
     if eaglerect.y<=500:
@@ -88,7 +89,10 @@ mouse = classes.character("mouse", screen, mouse0, mouse1, mouse2, mouse3, mouse
 bush = classes.character("bush", screen, bush0, bush1, bush2, bush3, bushrect)
 bird = classes.character("bird", screen, bird0, bird1, bird2, bird3, birdrect)
 i=0
-while 1:
+firsthit=0
+running=True
+while (health>10):
+    print health
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
 
@@ -113,28 +117,36 @@ while 1:
     if flying_eagle.is_attacking(mouse):
         attacking_eagle.movement(i,image_delay)
         bird.movement(i, image_delay)
-        mouserect.x = 600
-        mouserect.y = 638
+        firsthit=0
+        health=min(1000,health+50)
         print "attacking mouse"
     elif flying_eagle.is_attacking(bird):
         attacking_eagle.movement(i,image_delay)
         mouse.movement(i, image_delay)
-        birdrect.x = 600
-        birdrect.y = 100
+        firsthit=0
+        health=min(1000,health+85)
         print "attacking bird"
+    elif flying_eagle.is_hit(bush):
+        attacking_eagle.movement(i,image_delay)
+        print "hit"
+        firsthit+=1
+        if firsthit==1:
+            health=min(1000,health-70)
     elif is_eagle_flying(flying_eagle.imagerect):
+        health=health-2;
         flying_eagle.movement(i,image_delay)
         bird.movement(i, image_delay)
         mouse.movement(i, image_delay)
-        birdrect.x = 600
-        birdrect.y = 100
+        firsthit=0
         print "flying"
         print score
         score=score+2;
     else:
         print " walking"
+        health=health-1;
         bird.movement(i, image_delay)
         mouse.movement(i, image_delay)
+        firsthit=0;
         print score
         score=score+1;
         walking_eagle.movement(i,image_delay)
@@ -146,3 +158,5 @@ while 1:
     if bird.imagerect.x + bird.imagerect.width < 0:
         bird.imagerect.x = 1280
     i += 1
+
+print "Game Over"
