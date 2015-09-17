@@ -1,5 +1,6 @@
 import pygame, sys
 import math
+import random
 
 def distance(x1, y1, x2, y2):
     return math.sqrt((x1-x2)**2+(y1-y2)**2)
@@ -42,7 +43,7 @@ class character(object):
 
     def is_attacking(self, objectarray):
         if self.imagerect.x+self.imagerect.width >= objectarray.imagerect.x and self.imagerect.y+self.imagerect.height >= objectarray.imagerect.y and self.imagerect.y <= objectarray.imagerect.y + objectarray.imagerect.height:
-            objectarray.imagerect.x=1200
+            objectarray.imagerect.x=1280
             return True
         else:
             return False
