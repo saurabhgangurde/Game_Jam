@@ -4,6 +4,7 @@ from sdl2 import *
 import math
 import classes
 
+score=0;
 
 def is_eagle_flying(eaglerect):
     if eaglerect.y<=500:
@@ -28,9 +29,9 @@ pygame.init()
 size = width, height = 1280, 760
 movedown = [0, 10]
 moveup = [0, -10]
-bush_moveleft = [-10, 0]
+bush_moveleft = [-8, 0]
 bird_moveleft = [-5, 0]
-mouse_moveleft = [-5, 0]
+mouse_moveleft = [-3, 0]
 
 black = 0, 0, 0
 
@@ -72,9 +73,9 @@ birdrect = bird0.get_rect()
 attack_eaglerect = attack_eagle.get_rect()
 
 bushrect.x = 600
-bushrect.y = 100
+bushrect.y = 579
 mouserect.x = 600
-mouserect.y = 100
+mouserect.y = 638
 birdrect.x = 600
 birdrect.y = 100
 eagle_walkrect.y = 600
@@ -108,17 +109,34 @@ while 1:
     image_delay=10
     screen.blit(bg, bgrect)
     bush.movement( i, image_delay)
-    mouse.movement(i, image_delay)
-    bird.movement(i, image_delay)
 
     if flying_eagle.is_attacking(mouse):
         attacking_eagle.movement(i,image_delay)
-        print "attacking"
+        bird.movement(i, image_delay)
+        mouserect.x = 600
+        mouserect.y = 638
+        print "attacking mouse"
+    elif flying_eagle.is_attacking(bird):
+        attacking_eagle.movement(i,image_delay)
+        mouse.movement(i, image_delay)
+        birdrect.x = 600
+        birdrect.y = 100
+        print "attacking bird"
     elif is_eagle_flying(flying_eagle.imagerect):
         flying_eagle.movement(i,image_delay)
+        bird.movement(i, image_delay)
+        mouse.movement(i, image_delay)
+        birdrect.x = 600
+        birdrect.y = 100
         print "flying"
+        print score
+        score=score+2;
     else:
         print " walking"
+        bird.movement(i, image_delay)
+        mouse.movement(i, image_delay)
+        print score
+        score=score+1;
         walking_eagle.movement(i,image_delay)
 
     if bush.imagerect.x + bush.imagerect.width < 0:
