@@ -43,15 +43,21 @@ def is_eagle_walking(eaglerect):
     else:
         return False
 
-# def is_eagle_attacking(eaglerect, objectrect):
+
+def distance(x1, y1, x2, y2):
+    return sqrt((x1-x2)**2+(y1-y2)**2)
 
 
 
 
 
 
-def bush_movement(bush0, bush1, bush2, bush3, bush4, bush5, bush6, bush7, bushrect, t, image_delay):
-    i = t % (8*image_delay)
+
+
+
+
+def bush_movement(bush0, bush1, bush2, bush3, bushrect, t, image_delay):
+    i = t % (4*image_delay)
     if i<image_delay:
         screen.blit(bush0, bushrect)
         pygame.display.flip()
@@ -63,18 +69,6 @@ def bush_movement(bush0, bush1, bush2, bush3, bush4, bush5, bush6, bush7, bushre
         pygame.display.flip()
     elif i>3*image_delay-1 and i<4*image_delay:
         screen.blit(bush3, bushrect)
-        pygame.display.flip()
-    elif (i>4*image_delay-1 and i<5*image_delay):
-        screen.blit(bush4, bushrect)
-        pygame.display.flip()
-    elif (i>5*image_delay-1 and i< 6*image_delay):
-        screen.blit(bush5, bushrect)
-        pygame.display.flip()
-    elif (i>6*image_delay-1 and i<7*image_delay):
-        screen.blit(bush6, bushrect)
-        pygame.display.flip()
-    elif (i>7*image_delay-1 and i<8*image_delay):
-        screen.blit(bush7, bushrect)
         pygame.display.flip()
 
 
@@ -129,14 +123,11 @@ bg = pygame.image.load("resources/bg.jpg")
 eagle_walk1 = pygame.image.load("resources/walk/walk1.jpg")
 eagle_walk2 = pygame.image.load("resources/walk/walk2.jpg")
 
-bush0 = pygame.image.load("resources/bush/0.gif")
-bush1 = pygame.image.load("resources/bush/1.gif")
-bush2 = pygame.image.load("resources/bush/2.gif")
-bush3 = pygame.image.load("resources/bush/3.gif")
-bush4 = pygame.image.load("resources/bush/4.gif")
-bush5 = pygame.image.load("resources/bush/5.gif")
-bush6 = pygame.image.load("resources/bush/6.gif")
-bush7 = pygame.image.load("resources/bush/7.gif")
+bush0 = pygame.image.load("resources/bush/0.png")
+bush1 = pygame.image.load("resources/bush/1.png")
+bush2 = pygame.image.load("resources/bush/2.png")
+bush3 = pygame.image.load("resources/bush/3.png")
+
 
 mouse0 = pygame.image.load("resources/mouse/0.gif")
 mouse1 = pygame.image.load("resources/mouse/1.gif")
@@ -179,7 +170,7 @@ while 1:
 
     image_delay=10
     screen.blit(bg, bgrect)
-    bush_movement(bush0, bush1, bush2, bush3, bush4, bush5, bush6, bush7, bushrect, i, image_delay)
+    bush_movement(bush0, bush1, bush2, bush3, bushrect, i, image_delay)
     mouse_movement(mouse0, mouse1, mouse2, mouse3, mouserect, i, image_delay)
     bird_movement(bird0, bird1, bird2, bird3, birdrect, i, image_delay)
 
@@ -188,11 +179,10 @@ while 1:
     elif is_eagle_walking(eaglerect):
         eagle_walk(eagle_walk1, eagle_walk2, eaglerect,  i, image_delay)
 
-    if bushrect.x<0:
-        bushrect.x=1280
-    if mouserect.x<0:
-        mouserect.x=1280
-    if birdrect.x<0:
-        birdrect.x=1280
-
-    i=i+1
+    if bushrect.x < 0:
+        bushrect.x = 1280
+    if mouserect.x < 0:
+        mouserect.x = 1280
+    if birdrect.x < 0:
+        birdrect.x = 1280
+    i += 1
