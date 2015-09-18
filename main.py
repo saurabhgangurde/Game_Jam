@@ -1,12 +1,11 @@
 import sys, pygame
 import time
-from sdl2 import *
-import math
 import classes
 import random
 
 score=0;
 health=1000;
+extra=False
 
 def is_eagle_flying(eaglerect):
     if eaglerect.y<=500:
@@ -22,9 +21,6 @@ def is_eagle_walking(eaglerect):
         return False
 
 
-def distance(x1, y1, x2, y2):
-    return math.sqrt((x1-x2)**2+(y1-y2)**2)
-
 
 pygame.init()
 size = width, height = 1280, 760
@@ -34,6 +30,8 @@ bush_moveleft = [-18, 0]
 bird_moveleft = [-15, 0]
 mouse_moveleft = [-13, 0]
 arrow_moveleft = [-15,0]
+newarrow_moveleft = [-15,0]
+god_moveleft = [-10,0]
 
 black = 0, 0, 0
 
@@ -72,7 +70,9 @@ newbird2 = pygame.image.load("resources/bird_food1/2.gif")
 newbird3 = pygame.image.load("resources/bird_food1/3.gif")
 
 arrow0 = pygame.image.load("resources/arrow/arrow.png")
+arrow1 = pygame.image.load("resources/arrow/arrow.png")
 heart = pygame.image.load("resources/heart/heart.png")
+god1 = pygame.image.load("resources/heart/heart.png")
 health_img = pygame.image.load("resources/health/health.png")
 
 go = pygame.image.load("resources/gameover/gameover.jpg")
@@ -87,8 +87,10 @@ birdrect = bird0.get_rect()
 newbirdrect = newbird0.get_rect()
 attack_eaglerect = attack_eagle.get_rect()
 arrowrect = arrow0.get_rect()
+arrow1rect = arrow1.get_rect()
 gorect = go.get_rect()
 heartrect = heart.get_rect()
+godrect=god1.get_rect()
 health_imgrect = health_img.get_rect()
 startrect = start.get_rect()
 
@@ -103,6 +105,8 @@ eagle_walkrect.y = 630
 eagle_walkrect.x = 50
 arrowrect.y = 250
 arrowrect.x = 600
+arrow1rect.y= 150
+arrow1rect.x = 600
 heartrect.y = 0
 heartrect.x = 220
 health_imgrect.y = 5
@@ -110,35 +114,40 @@ health_imgrect.x = 30
 
 flying_eagle = classes.character("flying Eagle", screen, eagle0, eagle1, eagle2, eagle3, eaglerect)
 walking_eagle = classes.character("walking Eagle", screen, eagle_walk1, eagle_walk2, eagle_walk1, eagle_walk2, eagle_walkrect)
-attacking_eagle = classes.character("attacking Eagle", screen, attack_eagle, attack_eagle, attack_eagle, attack_eagle, eaglerect )
+#attacking_eagle = classes.character("attacking Eagle", screen, attack_eagle, attack_eagle, attack_eagle, attack_eagle, eaglerect )
 mouse = classes.character("mouse", screen, mouse0, mouse1, mouse2, mouse3, mouserect)
 bush = classes.character("bush", screen, bush0, bush1, bush2, bush3, bushrect)
 bird = classes.character("bird", screen, bird0, bird1, bird2, bird3, birdrect)
 newbird = classes.character("newbird", screen, newbird0, newbird1, newbird2, newbird3, newbirdrect)
 arrow = classes.character("arrow", screen, arrow0, arrow0, arrow0, arrow0, arrowrect)
-
+newarrow= classes.character("arrow", screen, arrow1, arrow1, arrow1, arrow1, arrowrect)
+god = classes.character("Life",screen,god1,god1,god1,god1,godrect)
 flying_eagle_thread= classes.thread_character("flying eagle", flying_eagle)
 walking_eagle_thread= classes.thread_character("walking eagle", walking_eagle)
-attacking_eagle_thread= classes.thread_character("attacking eagle", attacking_eagle)
+
+#attacking_eagle_thread= classes.thread_character("attacking eagle", attacking_eagle)
+god_thread = classes.thread_character("Life",god)
 mouse_thread= classes.thread_character("mouse", mouse)
 bush_thread= classes.thread_character("bush", bush)
 bird_thread = classes.thread_character("bird", bird)
 newbird_thread = classes.thread_character("newbird", newbird)
 arrow_thread = classes.thread_character("arrow", arrow)
-
+newarrow_thread = classes.thread_character("arrow2", newarrow)
 
 game_name = classes.thread_blit([490,10],screen)
 life = classes.thread_blit([260,10],screen)
 health_txt = classes.thread_blit([50,10],screen)
 score_txt = classes.thread_blit([1000,10],screen)
-hit_bush = classes.thread_blit([640,380],screen)
+hit_bush = classes.thread_blit([540,380],screen)
+live_lost = classes.thread_blit([540,280],screen)
 font = pygame.font.Font(None, 36)
 font1 = pygame.font.Font(None, 72)
 
 i=0
 firsthit=0
 firsthitarrow=0
-lives = 3
+firsthitnewarrow=0
+lives = 1
 while 1:
 
     screen.blit(start, startrect)
@@ -166,12 +175,19 @@ while (lives>0):
         if event.key == pygame.K_ESCAPE:
             lives = 0
 
-    attacking_eagle.imagerect = flying_eagle.imagerect
+    #attacking_eagle.imagerect = flying_eagle.imagerect
     bush.velocity(bush_moveleft)
     mouse.velocity(mouse_moveleft)
     bird.velocity(bird_moveleft)
     newbird.velocity(bird_moveleft)
     arrow.velocity(arrow_moveleft)
+    newarrow.velocity(newarrow_moveleft)
+    if extra :
+        god_thread.run(i,image_delay)
+        god.velocity(god_moveleft)
+        if flying_eagle.is_attacking(god):
+            extra=False
+            lives+=1
 
     image_delay=5
     screen.blit(bg, bgrect)
@@ -184,17 +200,21 @@ while (lives>0):
         bird_thread.run(i, image_delay)
         newbird_thread.run(i, image_delay)
         arrow_thread.run(i,image_delay)
+        newarrow_thread.run(i,image_delay)
         firsthit = 0
         firsthitarrow = 0
+        firsthitnewarrow = 0
         health=min(1000, health+20)
         print "attacking mouse"
     elif flying_eagle.is_attacking(bird):
         newbird_thread.run(i, image_delay)
         flying_eagle_thread.run(i,image_delay)
         mouse_thread.run(i, image_delay)
+        newarrow_thread.run(i,image_delay)
         arrow_thread.run(i,image_delay)
         firsthit = 0
         firsthitarrow = 0
+        firsthitnewarrow = 0
         health=min(1000,health+40)
         print "attacking bird"
     elif flying_eagle.is_attacking(newbird):
@@ -202,8 +222,10 @@ while (lives>0):
         flying_eagle_thread.run(i,image_delay)
         mouse_thread.run(i, image_delay)
         arrow_thread.run(i,image_delay)
+        newarrow_thread.run(i,image_delay)
         firsthit = 0
         firsthitarrow = 0
+        firsthitnewarrow = 0
         health=min(1000,health+60)
         print "attacking newbird"
     elif flying_eagle.is_hit(bush):
@@ -212,7 +234,9 @@ while (lives>0):
         time.sleep(0.01)
         newbird_thread.run(i, image_delay)
         mouse_thread.run(i, image_delay)
+        newarrow_thread.run(i,image_delay)
         arrow_thread.run(i,image_delay)
+        firsthitnewarrow = 0
         print "hit"
         firsthit+=1
         if firsthit==1:
@@ -221,10 +245,23 @@ while (lives>0):
         flying_eagle_thread.run(i,image_delay)
         bird_thread.run(i, image_delay)
         newbird_thread.run(i, image_delay)
+        newarrow_thread.run(i,image_delay)
         mouse_thread.run(i, image_delay)
+        firsthitnewarrow = 0
         print "hit by arrow"
         firsthitarrow+=1
         if firsthitarrow==1:
+            health=min(1000,health-50)
+    elif flying_eagle.is_attacking(newarrow):
+        flying_eagle_thread.run(i,image_delay)
+        bird_thread.run(i, image_delay)
+        newbird_thread.run(i, image_delay)
+        arrow_thread.run(i,image_delay)
+        mouse_thread.run(i, image_delay)
+        firsthitarrow = 0
+        print "hit by arrow"
+        firsthitnewarrow+=1
+        if firsthitnewarrow==1:
             health=min(1000,health-50)
     elif is_eagle_flying(flying_eagle.imagerect):
         health=health-2
@@ -232,8 +269,10 @@ while (lives>0):
         bird_thread.run(i, image_delay)
         newbird_thread.run(i, image_delay)
         mouse_thread.run(i, image_delay)
+        newarrow_thread.run(i,image_delay)
         arrow_thread.run(i,image_delay)
         firsthit=0
+        firsthitnewarrow = 0
         firsthitarrow=0
         print "flying"
         print score
@@ -244,9 +283,11 @@ while (lives>0):
         bird_thread.run(i, image_delay)
         newbird_thread.run(i, image_delay)
         mouse_thread.run(i, image_delay)
+        newarrow_thread.run(i,image_delay)
         arrow_thread.run(i, image_delay)
         firsthit = 0
         firsthitarrow = 0
+        firsthitnewarrow = 0
         print score
         score += 1
         walking_eagle_thread.run(i, image_delay)
@@ -258,7 +299,7 @@ while (lives>0):
         arrow_thread = classes.thread_character("arrow", arrow)
         arrow.imagerect.x = 1280
         arrow.imagerect.y = random.randint(50, 500)
-        if score<2000:
+        if score<200:
             arrow_moveleft = [-15-random.randint(2,20), 0]
         elif score>=200 and score<400:
             arrow_moveleft = [-20-random.randint(2,20), 0]
@@ -271,6 +312,35 @@ while (lives>0):
         elif score>=6000:
             arrow_moveleft = [-40-random.randint(2,20), 0]
 
+    if newarrow.imagerect.x + newarrow.imagerect.width < 0 or flying_eagle.is_attacking(newarrow):
+        del newarrow
+        del newarrow_thread
+        newarrow = classes.character("arrow", screen, arrow1, arrow1, arrow1, arrow1, arrow1rect)
+        newarrow_thread = classes.thread_character("arrow", newarrow)
+        newarrow.imagerect.x = 1280
+        newarrow.imagerect.y = random.randint(50, 500)
+        if score<2000:
+            newarrow_moveleft = [-15-random.randint(2,20), 0]
+        elif score>=200 and score<400:
+            newarrow_moveleft = [-20-random.randint(2,20), 0]
+        elif score>=400 and score<800:
+            newarrow_moveleft = [-25-random.randint(2,20), 0]
+        elif score>=800 and score<1600:
+            newarrow_moveleft = [-30-random.randint(2,20), 0]
+        elif score>=1600 and score<3200:
+            newarrow_moveleft = [-35-random.randint(2,20), 0]
+        elif score>=6000:
+            newarrow_moveleft = [-40-random.randint(2,20), 0]
+    if lives==1 :
+        extra=True
+    if god.imagerect.x + god.imagerect.width < 0 and extra and random.randint(1,1000)>990:
+        del god
+        del god_thread
+        god = classes.character("Life",screen,god1,god1,god1,god1,godrect)
+        god_thread = classes.thread_character("Life",god)
+        god.imagerect.x = 1280
+        god.imagerect.y = random.randint(50, 500)
+        god_moveleft = [-5-random.randint(2,10), 0]
     if bush.imagerect.x + bush.imagerect.width < 0 :
         del bush
         del bush_thread
@@ -308,6 +378,9 @@ while (lives>0):
     if health < 0:
         health = 1000
         lives -= 1
+        text = font1.render("lives X"+str(lives), 1, (0,0,0))
+        live_lost.run(text)
+        time.sleep(1)
     text = font.render(str(health), 1, (0, 0, 0))
     health_txt.run(text)
     text = font.render(str(lives), 1, (0, 0, 0))
@@ -322,5 +395,3 @@ while 1:
         if event.type == pygame.QUIT: sys.exit()
     screen.blit(go, gorect)
     pygame.display.flip()
-
-print "Game Over"
