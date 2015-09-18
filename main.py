@@ -29,6 +29,7 @@ moveup = [0, -20]
 bush_moveleft = [-18, 0]
 bird_moveleft = [-15, 0]
 mouse_moveleft = [-13, 0]
+mouse1_moveleft = [-13,0]
 arrow_moveleft = [-15,0]
 newarrow_moveleft = [-15,0]
 god_moveleft = [-10,0]
@@ -56,7 +57,7 @@ bush3 = pygame.image.load("resources/bush/3.png")
 
 
 mouse0 = pygame.image.load("resources/mouse/0.gif")
-mouse1 = pygame.image.load("resources/mouse/1.gif")
+mouse_1 = pygame.image.load("resources/mouse/1.gif")
 mouse2 = pygame.image.load("resources/mouse/2.gif")
 mouse3 = pygame.image.load("resources/mouse/3.gif")
 
@@ -86,6 +87,7 @@ eagle_walkrect = eagle1.get_rect()
 bgrect = bg.get_rect()
 bushrect = bush0.get_rect()
 mouserect = mouse0.get_rect()
+mouse1rect = mouse0.get_rect()
 birdrect = bird0.get_rect()
 newbirdrect = newbird0.get_rect()
 attack_eaglerect = attack_eagle.get_rect()
@@ -121,7 +123,8 @@ cloudrect.x = 1280
 flying_eagle = classes.character("flying Eagle", screen, eagle0, eagle1, eagle2, eagle3, eaglerect)
 walking_eagle = classes.character("walking Eagle", screen, eagle_walk1, eagle_walk2, eagle_walk1, eagle_walk2, eagle_walkrect)
 #attacking_eagle = classes.character("attacking Eagle", screen, attack_eagle, attack_eagle, attack_eagle, attack_eagle, eaglerect )
-mouse = classes.character("mouse", screen, mouse0, mouse1, mouse2, mouse3, mouserect)
+mouse = classes.character("mouse", screen, mouse0, mouse_1, mouse2, mouse3, mouserect)
+mouse1 = classes.character("mouse1", screen, mouse0, mouse_1, mouse2, mouse3, mouse1rect)
 bush = classes.character("bush", screen, bush0, bush1, bush2, bush3, bushrect)
 bird = classes.character("bird", screen, bird0, bird1, bird2, bird3, birdrect)
 newbird = classes.character("newbird", screen, newbird0, newbird1, newbird2, newbird3, newbirdrect)
@@ -135,6 +138,7 @@ cloud = classes.character("cloud", screen, cloud0, cloud0, cloud0, cloud0, cloud
 #attacking_eagle_thread= classes.thread_character("attacking eagle", attacking_eagle)
 god_thread = classes.thread_character("Life",god)
 mouse_thread= classes.thread_character("mouse", mouse)
+mouse1_thread= classes.thread_character("mouse1", mouse1)
 bush_thread= classes.thread_character("bush", bush)
 bird_thread = classes.thread_character("bird", bird)
 newbird_thread = classes.thread_character("newbird", newbird)
@@ -169,7 +173,6 @@ while 1:
 
 
 while (lives>0):
-    print health
     for event in pygame.event.get():
         if event.type == pygame.QUIT:sys.exit()
 
@@ -187,6 +190,7 @@ while (lives>0):
     #attacking_eagle.imagerect = flying_eagle.imagerect
     bush.velocity(bush_moveleft)
     mouse.velocity(mouse_moveleft)
+    mouse1.velocity(mouse1_moveleft)
     bird.velocity(bird_moveleft)
     newbird.velocity(bird_moveleft)
     arrow.velocity(arrow_moveleft)
@@ -212,43 +216,54 @@ while (lives>0):
         newbird_thread.run(i, image_delay)
         arrow_thread.run(i,image_delay)
         newarrow_thread.run(i,image_delay)
+        mouse1_thread.run(i,image_delay)
         firsthit = 0
         firsthitarrow = 0
         firsthitnewarrow = 0
         health=min(1000, health+20)
-        print "attacking mouse"
+    elif flying_eagle.is_attacking(mouse1):
+        flying_eagle_thread.run(i,image_delay)
+        bird_thread.run(i, image_delay)
+        newbird_thread.run(i, image_delay)
+        arrow_thread.run(i,image_delay)
+        mouse_thread.run(i,image_delay)
+        newarrow_thread.run(i,image_delay)
+        firsthit = 0
+        firsthitarrow = 0
+        firsthitnewarrow = 0
+        health=min(1000, health+20)
     elif flying_eagle.is_attacking(bird):
         newbird_thread.run(i, image_delay)
         flying_eagle_thread.run(i,image_delay)
         mouse_thread.run(i, image_delay)
+        mouse1_thread.run(i, image_delay)
         newarrow_thread.run(i,image_delay)
         arrow_thread.run(i,image_delay)
         firsthit = 0
         firsthitarrow = 0
         firsthitnewarrow = 0
         health=min(1000,health+40)
-        print "attacking bird"
     elif flying_eagle.is_attacking(newbird):
         bird_thread.run(i, image_delay)
         flying_eagle_thread.run(i,image_delay)
         mouse_thread.run(i, image_delay)
+        mouse1_thread.run(i, image_delay)
         arrow_thread.run(i,image_delay)
         newarrow_thread.run(i,image_delay)
         firsthit = 0
         firsthitarrow = 0
         firsthitnewarrow = 0
         health=min(1000,health+60)
-        print "attacking newbird"
     elif flying_eagle.is_hit(bush):
         text = font.render("HIT BY BUSH", 1, (0, 0, 0))
         hit_bush.run(text)
         time.sleep(0.01)
         newbird_thread.run(i, image_delay)
+        mouse1_thread.run(i, image_delay)
         mouse_thread.run(i, image_delay)
         newarrow_thread.run(i,image_delay)
         arrow_thread.run(i,image_delay)
         firsthitnewarrow = 0
-        print "hit"
         firsthit+=1
         if firsthit==1:
             health=min(1000,health-70)
@@ -257,9 +272,9 @@ while (lives>0):
         bird_thread.run(i, image_delay)
         newbird_thread.run(i, image_delay)
         newarrow_thread.run(i,image_delay)
+        mouse1_thread.run(i, image_delay)
         mouse_thread.run(i, image_delay)
         firsthitnewarrow = 0
-        print "hit by arrow"
         firsthitarrow+=1
         if firsthitarrow==1:
             health=min(1000,health-50)
@@ -268,9 +283,9 @@ while (lives>0):
         bird_thread.run(i, image_delay)
         newbird_thread.run(i, image_delay)
         arrow_thread.run(i,image_delay)
+        mouse1_thread.run(i, image_delay)
         mouse_thread.run(i, image_delay)
         firsthitarrow = 0
-        print "hit by arrow"
         firsthitnewarrow+=1
         if firsthitnewarrow==1:
             health=min(1000,health-50)
@@ -279,27 +294,25 @@ while (lives>0):
         flying_eagle_thread.run(i,image_delay)
         bird_thread.run(i, image_delay)
         newbird_thread.run(i, image_delay)
+        mouse1_thread.run(i, image_delay)
         mouse_thread.run(i, image_delay)
         newarrow_thread.run(i,image_delay)
         arrow_thread.run(i,image_delay)
         firsthit=0
         firsthitnewarrow = 0
         firsthitarrow=0
-        print "flying"
-        print score
         score=score+2
     else:
-        print " walking"
         health=health-1
         bird_thread.run(i, image_delay)
         newbird_thread.run(i, image_delay)
+        mouse1_thread.run(i, image_delay)
         mouse_thread.run(i, image_delay)
         newarrow_thread.run(i,image_delay)
         arrow_thread.run(i, image_delay)
         firsthit = 0
         firsthitarrow = 0
         firsthitnewarrow = 0
-        print score
         score += 1
         walking_eagle_thread.run(i, image_delay)
 
@@ -317,11 +330,13 @@ while (lives>0):
         elif score>=1000 and score<2000:
             arrow_moveleft = [-25-random.randint(2,20), 0]
         elif score>=2000 and score<3000:
-            arrow_moveleft = [-30-random.randint(2,20), 0]
-        elif score>=3000 and score<5000:
             arrow_moveleft = [-35-random.randint(2,20), 0]
-        elif score>=5000:
-            arrow_moveleft = [-40-random.randint(2,20), 0]
+        elif score>=3000 and score<5000:
+            arrow_moveleft = [-45-random.randint(2,20), 0]
+        elif score>=5000 and score<7000:
+            arrow_moveleft = [-55-random.randint(2,20), 0]
+        elif score>=7000 :
+            arrow_moveleft = [-65-random.randint(2,20), 0]        
 
     if newarrow.imagerect.x + newarrow.imagerect.width < 0 or flying_eagle.is_attacking(newarrow):
         del newarrow
@@ -330,21 +345,23 @@ while (lives>0):
         newarrow_thread = classes.thread_character("arrow", newarrow)
         newarrow.imagerect.x = 1280
         newarrow.imagerect.y = random.randint(50, 650)
-        if score<2000:
+        if score<500:
             newarrow_moveleft = [-15-random.randint(2,20), 0]
-        elif score>=200 and score<400:
+        elif score>=500 and score<1000:
             newarrow_moveleft = [-20-random.randint(2,20), 0]
-        elif score>=400 and score<800:
+        elif score>=1000 and score<2000:
             newarrow_moveleft = [-25-random.randint(2,20), 0]
-        elif score>=800 and score<1600:
-            newarrow_moveleft = [-30-random.randint(2,20), 0]
-        elif score>=1600 and score<3200:
+        elif score>=2000 and score<3000:
             newarrow_moveleft = [-35-random.randint(2,20), 0]
-        elif score>=6000:
-            newarrow_moveleft = [-40-random.randint(2,20), 0]
+        elif score>=3000 and score<5000:
+            newarrow_moveleft = [-45-random.randint(2,20), 0]
+        elif score>=5000 and score<7000:
+            newarrow_moveleft = [-55-random.randint(2,20), 0]
+        elif score>=7000 :
+            newarrow_moveleft = [-65-random.randint(2,20), 0] 
     if lives==1 :
         extra=True
-    if god.imagerect.x + god.imagerect.width < 0 and extra and random.randint(1,1000)>995:
+    if god.imagerect.x + god.imagerect.width < 0 and extra and random.randint(1,1000)>999:
         del god
         del god_thread
         god = classes.character("Life",screen,god1,god1,god1,god1,godrect)
@@ -371,11 +388,19 @@ while (lives>0):
     if mouse.imagerect.x + mouse.imagerect.width< 0 or flying_eagle.is_attacking(mouse) :
         del mouse
         del mouse_thread
-        mouse = classes.character("mouse", screen, mouse0, mouse1, mouse2, mouse3, mouserect)
+        mouse = classes.character("mouse", screen, mouse0, mouse_1, mouse2, mouse3, mouserect)
         mouse_thread= classes.thread_character("mouse", mouse)
         mouse.imagerect.x = 1280
         mouse.imagerect.y = 630
         mouse_moveleft = [-15-random.randint(2,10), 0]
+    if mouse1.imagerect.x + mouse1.imagerect.width< 0 or flying_eagle.is_attacking(mouse1) :
+        del mouse1
+        del mouse1_thread
+        mouse1 = classes.character("mouse1", screen, mouse0, mouse_1, mouse2, mouse3, mouse1rect)
+        mouse1_thread= classes.thread_character("mouse1", mouse1)
+        mouse1.imagerect.x = 1280
+        mouse1.imagerect.y = 630
+        mouse1_moveleft = [-20-random.randint(2,10), 0]
     if bird.imagerect.x + bird.imagerect.width < 0 or flying_eagle.is_attacking(bird):
         del bird
         del bird_thread
