@@ -1,6 +1,7 @@
 import pygame, sys
 import math
 import random
+import threading
 
 def distance(x1, y1, x2, y2):
     return math.sqrt((x1-x2)**2+(y1-y2)**2)
@@ -43,7 +44,6 @@ class character(object):
 
     def is_attacking(self, objectarray):
         if self.imagerect.x+self.imagerect.width >= objectarray.imagerect.x and self.imagerect.y+self.imagerect.height >= objectarray.imagerect.y and self.imagerect.y <= objectarray.imagerect.y + objectarray.imagerect.height:
-            objectarray.imagerect.x=1280
             return True
         else:
             return False
@@ -53,3 +53,30 @@ class character(object):
             return True
         else:
             return False
+
+class thread_character(threading.Thread):
+    def __init__(self, name, character_object):
+        threading.Thread.__init__(self)
+        self.name = name
+        self.character_object = character_object
+
+    def run(self, t, image_delay):
+        movement(self.character_object, t, image_delay)
+
+
+def movement(character_object, t , image_delay):
+    character_object.movement(t, image_delay)
+
+
+class thread_blit(threading.Thread):
+    def __init__(self,textpos, screen):
+        threading.Thread.__init__(self)
+        self.textpos = textpos
+        self.screen = screen
+
+    def run(self, text):
+        self.screen.blit(text, self.textpos)
+        pygame.display.update()
+
+
+
