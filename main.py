@@ -32,6 +32,7 @@ mouse_moveleft = [-13, 0]
 arrow_moveleft = [-15,0]
 newarrow_moveleft = [-15,0]
 god_moveleft = [-10,0]
+cloud_moveleft = [-10,0]
 
 black = 0, 0, 0
 
@@ -75,6 +76,8 @@ heart = pygame.image.load("resources/heart/heart.png")
 god1 = pygame.image.load("resources/heart/heart.png")
 health_img = pygame.image.load("resources/health/health.png")
 
+cloud0 = pygame.image.load("resources/cloud/cloud.png")
+
 go = pygame.image.load("resources/gameover/gameover.jpg")
 start = pygame.image.load("resources/start.jpg")
 
@@ -93,6 +96,7 @@ heartrect = heart.get_rect()
 godrect=god1.get_rect()
 health_imgrect = health_img.get_rect()
 startrect = start.get_rect()
+cloudrect = cloud0.get_rect()
 
 bushrect.x = 600
 bushrect.y = 579
@@ -111,6 +115,8 @@ heartrect.y = 0
 heartrect.x = 220
 health_imgrect.y = 5
 health_imgrect.x = 30
+cloudrect.y = 200
+cloudrect.x = 1280
 
 flying_eagle = classes.character("flying Eagle", screen, eagle0, eagle1, eagle2, eagle3, eaglerect)
 walking_eagle = classes.character("walking Eagle", screen, eagle_walk1, eagle_walk2, eagle_walk1, eagle_walk2, eagle_walkrect)
@@ -124,6 +130,7 @@ newarrow= classes.character("arrow", screen, arrow1, arrow1, arrow1, arrow1, arr
 god = classes.character("Life",screen,god1,god1,god1,god1,godrect)
 flying_eagle_thread= classes.thread_character("flying eagle", flying_eagle)
 walking_eagle_thread= classes.thread_character("walking eagle", walking_eagle)
+cloud = classes.character("cloud", screen, cloud0, cloud0, cloud0, cloud0, cloudrect)
 
 #attacking_eagle_thread= classes.thread_character("attacking eagle", attacking_eagle)
 god_thread = classes.thread_character("Life",god)
@@ -133,6 +140,7 @@ bird_thread = classes.thread_character("bird", bird)
 newbird_thread = classes.thread_character("newbird", newbird)
 arrow_thread = classes.thread_character("arrow", arrow)
 newarrow_thread = classes.thread_character("arrow2", newarrow)
+cloud_thread = classes.thread_character("cloud", cloud)
 
 game_name = classes.thread_blit([490,10],screen)
 life = classes.thread_blit([260,10],screen)
@@ -147,7 +155,8 @@ i=0
 firsthit=0
 firsthitarrow=0
 firsthitnewarrow=0
-lives = 1
+lives = 3
+image_delay=5
 while 1:
 
     screen.blit(start, startrect)
@@ -182,6 +191,8 @@ while (lives>0):
     newbird.velocity(bird_moveleft)
     arrow.velocity(arrow_moveleft)
     newarrow.velocity(newarrow_moveleft)
+    cloud.velocity(cloud_moveleft)
+    cloud_thread.run(i, image_delay)
     if extra :
         god_thread.run(i,image_delay)
         god.velocity(god_moveleft)
@@ -189,7 +200,7 @@ while (lives>0):
             extra=False
             lives+=1
 
-    image_delay=5
+    
     screen.blit(bg, bgrect)
     screen.blit(heart, heartrect)
     screen.blit(health_img, health_imgrect)
@@ -298,18 +309,18 @@ while (lives>0):
         arrow = classes.character("arrow", screen, arrow0, arrow0, arrow0, arrow0, arrowrect)
         arrow_thread = classes.thread_character("arrow", arrow)
         arrow.imagerect.x = 1280
-        arrow.imagerect.y = random.randint(50, 500)
-        if score<200:
+        arrow.imagerect.y = random.randint(50, 650)
+        if score<500:
             arrow_moveleft = [-15-random.randint(2,20), 0]
-        elif score>=200 and score<400:
+        elif score>=500 and score<1000:
             arrow_moveleft = [-20-random.randint(2,20), 0]
-        elif score>=400 and score<800:
+        elif score>=1000 and score<2000:
             arrow_moveleft = [-25-random.randint(2,20), 0]
-        elif score>=800 and score<1600:
+        elif score>=2000 and score<3000:
             arrow_moveleft = [-30-random.randint(2,20), 0]
-        elif score>=1600 and score<3200:
+        elif score>=3000 and score<5000:
             arrow_moveleft = [-35-random.randint(2,20), 0]
-        elif score>=6000:
+        elif score>=5000:
             arrow_moveleft = [-40-random.randint(2,20), 0]
 
     if newarrow.imagerect.x + newarrow.imagerect.width < 0 or flying_eagle.is_attacking(newarrow):
@@ -318,7 +329,7 @@ while (lives>0):
         newarrow = classes.character("arrow", screen, arrow1, arrow1, arrow1, arrow1, arrow1rect)
         newarrow_thread = classes.thread_character("arrow", newarrow)
         newarrow.imagerect.x = 1280
-        newarrow.imagerect.y = random.randint(50, 500)
+        newarrow.imagerect.y = random.randint(50, 650)
         if score<2000:
             newarrow_moveleft = [-15-random.randint(2,20), 0]
         elif score>=200 and score<400:
@@ -333,13 +344,21 @@ while (lives>0):
             newarrow_moveleft = [-40-random.randint(2,20), 0]
     if lives==1 :
         extra=True
-    if god.imagerect.x + god.imagerect.width < 0 and extra and random.randint(1,1000)>990:
+    if god.imagerect.x + god.imagerect.width < 0 and extra and random.randint(1,1000)>995:
         del god
         del god_thread
         god = classes.character("Life",screen,god1,god1,god1,god1,godrect)
         god_thread = classes.thread_character("Life",god)
         god.imagerect.x = 1280
-        god.imagerect.y = random.randint(50, 500)
+        god.imagerect.y = random.randint(50, 600)
+        god_moveleft = [-5-random.randint(2,10), 0]
+    if cloud.imagerect.x + cloud.imagerect.width < 0 and  random.randint(1,1000)>800:
+        del cloud_thread
+        del cloud
+        cloud = classes.character("cloud", screen, cloud0, cloud0, cloud0, cloud0, cloudrect)
+        cloud_thread = classes.thread_character("cloud",cloud)
+        god.imagerect.x = 1280
+        god.imagerect.y = random.randint(50, 200)
         god_moveleft = [-5-random.randint(2,10), 0]
     if bush.imagerect.x + bush.imagerect.width < 0 :
         del bush
@@ -390,8 +409,11 @@ while (lives>0):
     text = font.render("score " + str(score), 1, (0, 0, 0))
     score_txt.run(text)
 
+score_txt = classes.thread_blit([575,50],screen)
 while 1:
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
+    text = font1.render("score " + str(score), 1, (255, 255, 255))
+    score_txt.run(text)
     screen.blit(go, gorect)
     pygame.display.flip()
